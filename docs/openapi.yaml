@@ -1,34 +1,15 @@
 openapi: 3.0.3
 info:
-  title: NextSI PHP Auth CRUD API
-  version: 2.0.0
-  description: |
-    OpenAPI gerado a partir da estrutura atual do projeto PHP puro.
-
-    Rotas confirmadas no front controller:
-    - POST /auth/login
-    - GET /health
-    - GET /users
-    - GET /users/{id}
-    - GET /users/deleted/{id}
-    - POST /users
-    - PUT /users/{id}
-    - PUT /users/restore/{id}
-    - DELETE /users/{id}
+  title: NextSI API
+  version: 1.0.0
+  description: API simples para autenticação e gerenciamento de usuários.
+servers:
+  - url: http://localhost/nextsi/public
 
 tags:
   - name: Health
-    description: Verificação de disponibilidade da API.
   - name: Auth
-    description: Autenticação e emissão de JWT.
   - name: Users
-    description: Operações de usuários ativos e soft deleted.
-
-servers:
-  - url: http://localhost/nextsi/public
-    description: XAMPP com projeto dentro de htdocs/nextsi/public
-  - url: http://localhost
-    description: Virtual host ou DocumentRoot apontando direto para a aplicação
 
 components:
   securitySchemes:
@@ -36,20 +17,7 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
-
   schemas:
-    HealthData:
-      type: object
-      required: [status, timestamp]
-      properties:
-        status:
-          type: string
-          example: ok
-        timestamp:
-          type: string
-          format: date-time
-          example: '2026-04-21T20:30:00+00:00'
-
     LoginRequest:
       type: object
       required: [email, password]
@@ -60,69 +28,9 @@ components:
           example: admin@example.com
         password:
           type: string
-          format: password
           example: Admin@123
-
-    UserCreateRequest:
-      type: object
-      required: [name, email, password, phone, document, role]
-      properties:
-        name:
-          type: string
-          example: Maria Silva
-        email:
-          type: string
-          format: email
-          example: maria@example.com
-        password:
-          type: string
-          format: password
-          minLength: 8
-          example: Senha@123
-        phone:
-          type: string
-          example: '11987654321'
-        document:
-          type: string
-          description: CPF ou CNPJ normalizado
-          example: '11144477735'
-        role:
-          type: string
-          enum: [admin, user]
-          example: user
-
-    UserUpdateRequest:
-      type: object
-      description: No update, apenas os campos enviados serão alterados.
-      properties:
-        name:
-          type: string
-          example: Maria Silva Atualizada
-        email:
-          type: string
-          format: email
-          example: maria.atualizada@example.com
-        password:
-          type: string
-          format: password
-          minLength: 8
-          example: NovaSenha@123
-        phone:
-          type: string
-          example: '11999998888'
-        document:
-          type: string
-          description: CPF ou CNPJ normalizado
-          example: '11144477735'
-        role:
-          type: string
-          enum: [admin, user]
-          example: admin
-      additionalProperties: false
-
     User:
       type: object
-      required: [id, name, email, phone, document, role]
       properties:
         id:
           type: integer
@@ -136,10 +44,10 @@ components:
           example: admin@example.com
         phone:
           type: string
-          example: '11999999999'
+          example: "11999999999"
         document:
           type: string
-          example: '11144477735'
+          example: "11144477735"
         role:
           type: string
           enum: [admin, user]
@@ -147,186 +55,109 @@ components:
         created_at:
           type: string
           format: date-time
-          nullable: true
-          example: '2026-04-21 17:00:00'
         updated_at:
           type: string
           format: date-time
-          nullable: true
-          example: '2026-04-21 17:05:00'
         deleted_at:
           type: string
           format: date-time
           nullable: true
-          example: null
         deleted_by:
           type: integer
           nullable: true
-          example: null
-
-    LoginData:
+    UserCreateRequest:
       type: object
-      required: [access_token, token_type, expires_in, user]
+      required: [name, email, password, phone, document, role]
       properties:
-        access_token:
+        name:
           type: string
-          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20ifQ.signature
-        token_type:
+          example: Maria Silva
+        email:
           type: string
-          example: Bearer
-        expires_in:
-          type: integer
-          example: 3600
-        user:
-          $ref: '#/components/schemas/User'
-
-    MessageData:
-      type: object
-      required: [message]
-      properties:
-        message:
+          format: email
+          example: maria@example.com
+        password:
           type: string
-          example: Operation completed successfully
-
-    SuccessHealthResponse:
-      type: object
-      required: [success, data]
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          $ref: '#/components/schemas/HealthData'
-
-    SuccessLoginResponse:
-      type: object
-      required: [success, data]
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          $ref: '#/components/schemas/LoginData'
-
-    SuccessUserResponse:
-      type: object
-      required: [success, data]
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          $ref: '#/components/schemas/User'
-
-    SuccessUsersResponse:
-      type: object
-      required: [success, data]
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/User'
-
-    SuccessMessageResponse:
-      type: object
-      required: [success, data]
-      properties:
-        success:
-          type: boolean
-          example: true
-        data:
-          $ref: '#/components/schemas/MessageData'
-
-    ErrorBody:
-      type: object
-      required: [message]
-      properties:
-        message:
+          example: Senha@123
+        phone:
           type: string
-          example: Invalid credentials
-        code:
-          type: integer
-          nullable: true
-          example: 401
-
+          example: "11987654321"
+        document:
+          type: string
+          example: "11144477735"
+        role:
+          type: string
+          enum: [admin, user]
+          example: user
+    UserUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Maria Silva Atualizada
+        email:
+          type: string
+          format: email
+          example: maria.atualizada@example.com
+        password:
+          type: string
+          example: NovaSenha@123
+        phone:
+          type: string
+          example: "11987654321"
+        document:
+          type: string
+          example: "11144477735"
+        role:
+          type: string
+          enum: [admin, user]
+          example: user
     ErrorResponse:
       type: object
-      required: [success, error]
       properties:
         success:
           type: boolean
           example: false
         error:
-          $ref: '#/components/schemas/ErrorBody'
-
-  responses:
-    BadRequest:
-      description: Requisição inválida.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Unauthorized:
-      description: Token ausente ou credenciais inválidas.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Forbidden:
-      description: Sem permissão para acessar o recurso.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    NotFound:
-      description: Recurso não encontrado.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Conflict:
-      description: Conflito de dados, como e-mail ou documento duplicado.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    Validation:
-      description: Erro de validação.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
-    ServerError:
-      description: Erro interno.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ErrorResponse'
+          type: object
+          properties:
+            message:
+              type: string
+              example: User not found
+            code:
+              type: integer
+              example: 404
 
 paths:
   /health:
     get:
       tags: [Health]
       summary: Verifica se a API está online
-      operationId: getHealth
       responses:
         '200':
           description: API online
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessHealthResponse'
-        '500':
-          $ref: '#/components/responses/ServerError'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: ok
+                      timestamp:
+                        type: string
+                        format: date-time
 
   /auth/login:
     post:
       tags: [Auth]
-      summary: Autentica um usuário e retorna um JWT
-      operationId: login
+      summary: Faz login e retorna token JWT
       requestBody:
         required: true
         content:
@@ -339,19 +170,42 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessLoginResponse'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                      token_type:
+                        type: string
+                        example: Bearer
+                      expires_in:
+                        type: integer
+                        example: 3600
+                      user:
+                        $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
-          $ref: '#/components/responses/Validation'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Payload inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /users:
     get:
       tags: [Users]
       summary: Lista usuários ativos
-      operationId: listUsers
       security:
         - bearerAuth: []
       responses:
@@ -360,16 +214,24 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessUsersResponse'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     post:
       tags: [Users]
       summary: Cria um novo usuário
-      operationId: createUser
       security:
         - bearerAuth: []
       requestBody:
@@ -380,57 +242,90 @@ paths:
               $ref: '#/components/schemas/UserCreateRequest'
       responses:
         '201':
-          description: Usuário criado com sucesso
+          description: Usuário criado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessUserResponse'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Sem permissão de administrador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          $ref: '#/components/responses/Conflict'
+          description: E-mail ou documento já cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
-          $ref: '#/components/responses/Validation'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Payload inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /users/{id}:
-    parameters:
-      - in: path
-        name: id
-        required: true
-        schema:
-          type: integer
-        example: 1
-
     get:
       tags: [Users]
       summary: Busca um usuário ativo por ID
-      operationId: getUserById
       security:
         - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
           description: Usuário encontrado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessUserResponse'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     put:
       tags: [Users]
-      summary: Atualiza um usuário ativo por ID
-      operationId: updateUser
+      summary: Atualiza um usuário
       security:
         - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
         required: true
         content:
@@ -439,114 +334,182 @@ paths:
               $ref: '#/components/schemas/UserUpdateRequest'
       responses:
         '200':
-          description: Usuário atualizado com sucesso
+          description: Usuário atualizado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessUserResponse'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Sem permissão de administrador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '409':
-          $ref: '#/components/responses/Conflict'
+          description: E-mail ou documento já cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '422':
-          $ref: '#/components/responses/Validation'
-        '500':
-          $ref: '#/components/responses/ServerError'
-
+          description: Payload inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
     delete:
       tags: [Users]
-      summary: Realiza soft delete de um usuário ativo
-      operationId: deleteUser
+      summary: Exclui um usuário com soft delete
       security:
         - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
-          description: Usuário removido com sucesso
+          description: Usuário excluído
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessMessageResponse'
-              examples:
-                deleted:
-                  value:
-                    success: true
-                    data:
-                      message: User deleted successfully
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: User deleted successfully
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Sem permissão de administrador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /users/deleted/{id}:
     get:
       tags: [Users]
-      summary: Busca um usuário deletado por ID
-      operationId: getDeletedUserById
+      summary: Busca um usuário excluído por ID
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
-          example: 1
       responses:
         '200':
-          description: Usuário deletado encontrado
+          description: Usuário excluído encontrado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessUserResponse'
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/User'
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Sem permissão de administrador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Usuário excluído não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
   /users/restore/{id}:
     put:
       tags: [Users]
-      summary: Restaura um usuário previamente deletado
-      operationId: restoreUser
+      summary: Restaura um usuário excluído
       security:
         - bearerAuth: []
       parameters:
-        - in: path
-          name: id
+        - name: id
+          in: path
           required: true
           schema:
             type: integer
-          example: 1
       responses:
         '200':
-          description: Usuário restaurado com sucesso
+          description: Usuário restaurado
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/SuccessMessageResponse'
-              examples:
-                restored:
-                  value:
-                    success: true
-                    data:
-                      message: User restored successfully
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: User restored successfully
         '401':
-          $ref: '#/components/responses/Unauthorized'
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '403':
-          $ref: '#/components/responses/Forbidden'
+          description: Sem permissão de administrador
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
-          $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/ServerError'
+          description: Usuário excluído não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

@@ -1,50 +1,47 @@
-# API CRUD de autenticação em PHP
+# NextSI - API de Usuários em PHP
 
-Projeto ajustado para rodar com mais facilidade no XAMPP, sem depender de `composer install` para o autoload e para a leitura do `.env`.
+API feita em PHP para autenticação e gerenciamento de usuários.
 
-## O que foi corrigido
+O projeto foi organizado para rodar localmente com mais facilidade no XAMPP, usando MySQL, autenticação por token e documentação com Swagger. Também possui controle de permissão para que apenas usuários administradores possam criar, editar, excluir e restaurar usuários.
 
-- removida a dependência obrigatória de `vendor/autoload.php`
-- adicionado `bootstrap.php` com autoload PSR-4 simples e leitura de `.env`
-- corrigido o problema de rotas em subpasta do XAMPP (`/seu-projeto`, `/seu-projeto/public`)
-- adicionados `.htaccess` na raiz e em `public/`
-- corrigido o uso de banco inconsistente entre `.env.example`, `schema.sql` e `seed.sql`
-- ajustado `swagger-initializer.js` para usar caminho relativo
-- criado `database/setup.sql` para importar tudo de uma vez no phpMyAdmin
-- criado `index.php` na raiz para facilitar acesso pelo Apache
+---
+
+## O que este projeto faz
+
+Esta API permite:
+
+- verificar se a aplicação está online
+- fazer login
+- listar usuários ativos
+- buscar usuário por ID
+- criar usuário
+- editar usuário
+- excluir usuário com soft delete
+- consultar usuário excluído
+- restaurar usuário excluído
+
+As rotas atuais incluem `/health`, `/auth/login`, `/users`, `/users/{id}`, `/users/deleted/{id}` e `/users/restore/{id}`. 
+
+---
+
+## Tecnologias usadas
+
+- PHP
+- MySQL
+- XAMPP
+- Swagger UI para documentação da API
+
+O projeto também usa `.env` para configuração local e possui um `bootstrap.php` para carregar as classes e variáveis de ambiente.
+
+---
 
 ## Como rodar no XAMPP
 
 1. Coloque a pasta do projeto dentro de `htdocs`.
-2. Inicie **Apache** e **MySQL** no XAMPP.
-3. Importe `database/setup.sql` no phpMyAdmin.
-4. Confira o arquivo `.env`:
-   - `DB_HOST=localhost`
-   - `DB_PORT=3306`
-   - `DB_NAME=nextsi`
-   - `DB_USER=root`
-   - `DB_PASS=`
-5. Acesse no navegador:
-   - `http://localhost/NOME_DA_PASTA/health`
-   - ou `http://localhost/NOME_DA_PASTA/public/health`
+2. Abra o XAMPP.
+3. Ligue o **Apache** e o **MySQL**.
+4. Abra o phpMyAdmin.
+5. Importe o arquivo:
 
-## Rotas principais
-
-- `GET /health`
-- `POST /auth/login`
-- `GET /users`
-- `GET /users/{id}`
-- `POST /users`
-- `PUT /users/{id}`
-- `DELETE /users/{id}`
-
-## Swagger
-
-Se os assets do Swagger estiverem completos no projeto original, acesse:
-
-- `http://localhost/NOME_DA_PASTA/public/swagger/`
-
-## Login padrão
-
-- **e-mail:** `admin@example.com`
-- **senha:** `Admin@123`
+```text
+database/setup.sql
