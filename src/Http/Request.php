@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace App\Http;
 
 use App\Exceptions\HttpException;
-use App\Support\Json;
+use App\Utils\Json;
 
 final class Request
 {
-    /**
-     * @param array<string, string> $headers
-     * @param array<string, mixed> $query
-     * @param array<string, mixed> $attributes
-     */
     public function __construct(
         private string $method,
         private string $path,
@@ -65,9 +60,6 @@ final class Request
         return $path === '//' ? '/' : $path;
     }
 
-    /**
-     * @return array<string, string>
-     */
     private static function captureHeaders(): array
     {
         $headers = [];
@@ -154,9 +146,6 @@ final class Request
         return $token !== '' ? $token : null;
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function json(): array
     {
         if ($this->rawBody === '') {

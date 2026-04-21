@@ -54,35 +54,44 @@ final class UserController
 
     public function store(Request $request): Response
     {
+        $user = $this->createUserService->handle($request->json());
+
         return Response::json([
             'success' => true,
-            'data' => $this->createUserService->handle($request->json()),
+            'message' => 'User created successfully',
+            'data' => $user,
         ], 201);
     }
 
     public function update(Request $request): Response
     {
+        $user = $this->updateUserService->handle(
+            (int) $request->attribute('id'),
+            $request->json()
+        );
+
         return Response::json([
             'success' => true,
-            'data' => $this->updateUserService->handle((int) $request->attribute('id'), $request->json()),
+            'message' => 'User updated successfully',
+            'data' => $user,
         ]);
     }
 
     public function restore(Request $request): Response
     {
-        $this->restoreUserService->handle((int) $request->attribute('id'));
-        
+        $user = $this->restoreUserService->handle((int) $request->attribute('id'));
+
         return Response::json([
             'success' => true,
-            'data' => [
-                'message' => 'User restored successfully',
-            ],
+            'message' => 'User restored successfully',
+            'data' => $user,
         ]);
     }
 
     public function destroy(Request $request): Response
     {
         $authUser = $request->attribute('authUser');
+
         if (!$authUser instanceof AuthenticatedUser) {
             throw new \LogicException('Authenticated user must be present');
         }
@@ -91,9 +100,8 @@ final class UserController
 
         return Response::json([
             'success' => true,
-            'data' => [
-                'message' => 'User deleted successfully',
-            ],
+            'message' => 'User deleted successfully',
+            'data' => null,
         ]);
     }
 }

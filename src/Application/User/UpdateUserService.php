@@ -15,10 +15,6 @@ final class UpdateUserService
     {
     }
 
-    /**
-     * @param array<string, mixed> $payload
-     * @return array<string, mixed>
-     */
     public function handle(int $id, array $payload): array
     {
         $current = $this->userRepository->findActiveById($id);

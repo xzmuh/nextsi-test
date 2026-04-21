@@ -6,14 +6,10 @@ namespace App\Infrastructure\Validation;
 
 use App\Domain\User\Role;
 use App\Exceptions\HttpException;
-use App\Support\Str;
+use App\Utils\Str;
 
 final class UserInputValidator
 {
-    /**
-     * @param array<string, mixed> $input
-     * @return array<string, string>
-     */
     public static function validateLogin(array $input): array
     {
         $email = strtolower(trim((string) ($input['email'] ?? '')));
@@ -33,12 +29,10 @@ final class UserInputValidator
         ];
     }
 
-    /**
-     * @param array<string, mixed> $input
-     * @return array<string, string>
-     */
     public static function validateCreate(array $input): array
     {
+        self::assertAllowedFields($input, ['name', 'email', 'password', 'phone', 'document', 'role']);
+
         $data = self::normalize($input);
 
         foreach (['name', 'email', 'password', 'phone', 'document', 'role'] as $field) {
@@ -52,13 +46,10 @@ final class UserInputValidator
         return $data;
     }
 
-    /**
-     * @param array<string, mixed> $input
-     * @param array<string, mixed> $current
-     * @return array<string, string>
-     */
-    public static function validateUpdate(array $input, array $current): array
+   public static function validateUpdate(array $input, array $current): array
     {
+        self::assertAllowedFields($input, ['name', 'email', 'password', 'phone', 'document', 'role']);
+
         $data = [
             'name' => (string) ($current['name'] ?? ''),
             'email' => (string) ($current['email'] ?? ''),
@@ -100,9 +91,15 @@ final class UserInputValidator
         return $data;
     }
 
-    /**
-     * @param array<string, string> $data
-     */
+    private static function assertAllowedFields(array $input, array $allowedFields): void
+    {
+        foreach (array_keys($input) as $field) {
+            if (!in_array($field, $allowedFields, true)) {
+                throw HttpException::validation(sprintf('Unknown field: %s', $field));
+            }
+        }
+    }
+
     private static function assertNormalized(array $data, bool $passwordRequired): void
     {
         if (($data['name'] ?? '') === '') {
@@ -131,10 +128,6 @@ final class UserInputValidator
         Role::assertValid((string) ($data['role'] ?? ''));
     }
 
-    /**
-     * @param array<string, mixed> $input
-     * @return array<string, string>
-     */
     private static function normalize(array $input): array
     {
         return [

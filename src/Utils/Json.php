@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Support;
+namespace App\Utils;
 
 use App\Exceptions\HttpException;
 use JsonException;

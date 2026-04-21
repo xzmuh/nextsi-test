@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Validation;
 
-use App\Support\Str;
+use App\Utils\Str;
 
 final class DocumentValidator
 {
@@ -27,11 +27,13 @@ final class DocumentValidator
 
         for ($position = 9; $position < 11; $position++) {
             $sum = 0;
+
             for ($index = 0; $index < $position; $index++) {
                 $sum += (int) $cpf[$index] * (($position + 1) - $index);
             }
 
             $digit = ((10 * $sum) % 11) % 10;
+
             if ($digit !== (int) $cpf[$position]) {
                 return false;
             }
@@ -53,12 +55,14 @@ final class DocumentValidator
 
         foreach ($weights as $checkIndex => $weightSet) {
             $sum = 0;
+
             foreach ($weightSet as $index => $weight) {
                 $sum += (int) $cnpj[$index] * $weight;
             }
 
             $remainder = $sum % 11;
             $digit = $remainder < 2 ? 0 : 11 - $remainder;
+
             if ($digit !== (int) $cnpj[12 + $checkIndex]) {
                 return false;
             }

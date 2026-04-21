@@ -15,10 +15,6 @@ final class CreateUserService
     {
     }
 
-    /**
-     * @param array<string, mixed> $payload
-     * @return array<string, mixed>
-     */
     public function handle(array $payload): array
     {
         $data = UserInputValidator::validateCreate($payload);

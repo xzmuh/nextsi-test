@@ -10,9 +10,6 @@ use RuntimeException;
 
 final class Connection
 {
-    /**
-     * @param array<string, string> $env
-     */
     public static function fromEnv(array $env): PDO
     {
         $host = $env['DB_HOST'] ?? '127.0.0.1';

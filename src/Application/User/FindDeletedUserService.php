@@ -14,7 +14,6 @@ final class FindDeletedUserService
     {
     }
 
-    /** @return array<string, mixed> */
     public function handle(int $id): array
     {
         $user = $this->userRepository->findDeletedById($id);

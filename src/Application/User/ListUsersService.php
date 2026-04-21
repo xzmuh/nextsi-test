@@ -13,7 +13,6 @@ final class ListUsersService
     {
     }
 
-    /** @return list<array<string, mixed>> */
     public function handle(): array
     {
         return array_map(

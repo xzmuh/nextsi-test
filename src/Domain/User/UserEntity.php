@@ -6,10 +6,6 @@ namespace App\Domain\User;
 
 final class UserEntity
 {
-    /**
-     * @param array<string, mixed> $row
-     * @return array<string, mixed>
-     */
     public static function public(array $row): array
     {
         return [

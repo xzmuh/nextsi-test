@@ -17,11 +17,7 @@ final class LoginService
         private JwtService $jwtService,
     ) {
     }
-
-    /**
-     * @param array<string, mixed> $payload
-     * @return array<string, mixed>
-     */
+    
     public function handle(array $payload): array
     {
         $credentials = UserInputValidator::validateLogin($payload);

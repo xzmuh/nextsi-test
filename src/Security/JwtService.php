@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Security;
 
 use App\Exceptions\HttpException;
-use App\Support\Json;
+use App\Utils\Json;
 use JsonException;
 
 final class JwtService
@@ -25,9 +25,6 @@ final class JwtService
         return $this->ttl;
     }
 
-    /**
-     * @param array<string, mixed> $claims
-     */
     public function encode(array $claims): string
     {
         $now = time();
@@ -54,9 +51,6 @@ final class JwtService
         return implode('.', [$encodedHeader, $encodedPayload, $encodedSignature]);
     }
 
-    /**
-     * @return array<string, mixed>
-     */
     public function decode(string $token): array
     {
         $parts = explode('.', $token);

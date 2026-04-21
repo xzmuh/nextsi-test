@@ -23,7 +23,7 @@ final class AuthMiddleware implements MiddlewareInterface
     public function handle(Request $request, callable $next): Response
     {
         $token = $request->bearerToken();
-
+       
         if ($token === null) {
             throw HttpException::unauthorized('Bearer token is required');
         }

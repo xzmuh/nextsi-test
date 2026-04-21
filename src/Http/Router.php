@@ -8,15 +8,8 @@ use App\Exceptions\HttpException;
 
 final class Router
 {
-    /**
-     * @var list<array{method:string, pattern:string, regex:string, handler:callable, middlewares:list<MiddlewareInterface>}>
-     */
     private array $routes = [];
 
-    /**
-     * @param callable(Request): Response $handler
-     * @param list<MiddlewareInterface> $middlewares
-     */
     public function add(string $method, string $pattern, callable $handler, array $middlewares = []): void
     {
         $normalizedPattern = '/' . trim($pattern, '/');

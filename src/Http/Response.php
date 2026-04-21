@@ -6,9 +6,6 @@ namespace App\Http;
 
 final class Response
 {
-    /**
-     * @param array<string, string> $headers
-     */
     public function __construct(
         private int $status,
         private string $body,
@@ -16,10 +13,6 @@ final class Response
     ) {
     }
 
-    /**
-     * @param array<string, mixed> $payload
-     * @param array<string, string> $headers
-     */
     public static function json(array $payload, int $status = 200, array $headers = []): self
     {
         return new self(
