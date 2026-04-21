@@ -1,0 +1,552 @@
+openapi: 3.0.3
+info:
+  title: NextSI PHP Auth CRUD API
+  version: 2.0.0
+  description: |
+    OpenAPI gerado a partir da estrutura atual do projeto PHP puro.
+
+    Rotas confirmadas no front controller:
+    - POST /auth/login
+    - GET /health
+    - GET /users
+    - GET /users/{id}
+    - GET /users/deleted/{id}
+    - POST /users
+    - PUT /users/{id}
+    - PUT /users/restore/{id}
+    - DELETE /users/{id}
+
+tags:
+  - name: Health
+    description: Verificação de disponibilidade da API.
+  - name: Auth
+    description: Autenticação e emissão de JWT.
+  - name: Users
+    description: Operações de usuários ativos e soft deleted.
+
+servers:
+  - url: http://localhost/nextsi/public
+    description: XAMPP com projeto dentro de htdocs/nextsi/public
+  - url: http://localhost
+    description: Virtual host ou DocumentRoot apontando direto para a aplicação
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    HealthData:
+      type: object
+      required: [status, timestamp]
+      properties:
+        status:
+          type: string
+          example: ok
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-04-21T20:30:00+00:00'
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+          example: admin@example.com
+        password:
+          type: string
+          format: password
+          example: Admin@123
+
+    UserCreateRequest:
+      type: object
+      required: [name, email, password, phone, document, role]
+      properties:
+        name:
+          type: string
+          example: Maria Silva
+        email:
+          type: string
+          format: email
+          example: maria@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: Senha@123
+        phone:
+          type: string
+          example: '11987654321'
+        document:
+          type: string
+          description: CPF ou CNPJ normalizado
+          example: '11144477735'
+        role:
+          type: string
+          enum: [admin, user]
+          example: user
+
+    UserUpdateRequest:
+      type: object
+      description: No update, apenas os campos enviados serão alterados.
+      properties:
+        name:
+          type: string
+          example: Maria Silva Atualizada
+        email:
+          type: string
+          format: email
+          example: maria.atualizada@example.com
+        password:
+          type: string
+          format: password
+          minLength: 8
+          example: NovaSenha@123
+        phone:
+          type: string
+          example: '11999998888'
+        document:
+          type: string
+          description: CPF ou CNPJ normalizado
+          example: '11144477735'
+        role:
+          type: string
+          enum: [admin, user]
+          example: admin
+      additionalProperties: false
+
+    User:
+      type: object
+      required: [id, name, email, phone, document, role]
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Administrador
+        email:
+          type: string
+          format: email
+          example: admin@example.com
+        phone:
+          type: string
+          example: '11999999999'
+        document:
+          type: string
+          example: '11144477735'
+        role:
+          type: string
+          enum: [admin, user]
+          example: admin
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-04-21 17:00:00'
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-04-21 17:05:00'
+        deleted_at:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+        deleted_by:
+          type: integer
+          nullable: true
+          example: null
+
+    LoginData:
+      type: object
+      required: [access_token, token_type, expires_in, user]
+      properties:
+        access_token:
+          type: string
+          example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20ifQ.signature
+        token_type:
+          type: string
+          example: Bearer
+        expires_in:
+          type: integer
+          example: 3600
+        user:
+          $ref: '#/components/schemas/User'
+
+    MessageData:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Operation completed successfully
+
+    SuccessHealthResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/HealthData'
+
+    SuccessLoginResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/LoginData'
+
+    SuccessUserResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/User'
+
+    SuccessUsersResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+
+    SuccessMessageResponse:
+      type: object
+      required: [success, data]
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/MessageData'
+
+    ErrorBody:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Invalid credentials
+        code:
+          type: integer
+          nullable: true
+          example: 401
+
+    ErrorResponse:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          $ref: '#/components/schemas/ErrorBody'
+
+  responses:
+    BadRequest:
+      description: Requisição inválida.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Token ausente ou credenciais inválidas.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: Sem permissão para acessar o recurso.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Recurso não encontrado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Conflito de dados, como e-mail ou documento duplicado.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Validation:
+      description: Erro de validação.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: Erro interno.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Verifica se a API está online
+      operationId: getHealth
+      responses:
+        '200':
+          description: API online
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessHealthResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Autentica um usuário e retorna um JWT
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login realizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessLoginResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users:
+    get:
+      tags: [Users]
+      summary: Lista usuários ativos
+      operationId: listUsers
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Lista retornada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessUsersResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    post:
+      tags: [Users]
+      summary: Cria um novo usuário
+      operationId: createUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateRequest'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessUserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        example: 1
+
+    get:
+      tags: [Users]
+      summary: Busca um usuário ativo por ID
+      operationId: getUserById
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuário encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessUserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    put:
+      tags: [Users]
+      summary: Atualiza um usuário ativo por ID
+      operationId: updateUser
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Usuário atualizado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessUserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '422':
+          $ref: '#/components/responses/Validation'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+    delete:
+      tags: [Users]
+      summary: Realiza soft delete de um usuário ativo
+      operationId: deleteUser
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Usuário removido com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+              examples:
+                deleted:
+                  value:
+                    success: true
+                    data:
+                      message: User deleted successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users/deleted/{id}:
+    get:
+      tags: [Users]
+      summary: Busca um usuário deletado por ID
+      operationId: getDeletedUserById
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Usuário deletado encontrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessUserResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+
+  /users/restore/{id}:
+    put:
+      tags: [Users]
+      summary: Restaura um usuário previamente deletado
+      operationId: restoreUser
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: Usuário restaurado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessMessageResponse'
+              examples:
+                restored:
+                  value:
+                    success: true
+                    data:
+                      message: User restored successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
