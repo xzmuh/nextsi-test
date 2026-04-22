@@ -159,4 +159,6 @@ final class PdoUserRepository implements UserRepositoryInterface
             'id' => $id
         ]);
     }
+
+    //SQL Injection evitado com PDO (prepare e execute)
 }
